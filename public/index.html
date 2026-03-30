@@ -10,12 +10,11 @@
         --bg: #09101d;
         --panel: #121a30;
         --panel-2: #0f1630;
-        --panel-3: #182344;
         --text: #e7ecf7;
         --muted: #95a2c3;
         --accent: #76a9ff;
         --accent-2: #86efac;
-        --border: rgba(140, 160, 210, 0.22);
+        --border: rgba(140,160,210,0.22);
         --danger: #fca5a5;
         --warning: #fde68a;
       }
@@ -26,20 +25,11 @@
         background: linear-gradient(180deg, #08101d 0%, var(--bg) 100%);
         color: var(--text);
       }
-      .app {
-        display: grid;
-        grid-template-columns: 380px 1fr;
-        min-height: 100vh;
-      }
+      .app { display: grid; grid-template-columns: 420px 1fr; min-height: 100vh; }
       .sidebar, .main { padding: 20px; }
-      .sidebar {
-        border-right: 1px solid var(--border);
-        background: rgba(9, 13, 25, 0.88);
-      }
-      .main {
-        background: rgba(11, 16, 32, 0.76);
-      }
-      h1, h2, h3, p { margin-top: 0; }
+      .sidebar { border-right: 1px solid var(--border); background: rgba(9,13,25,0.9); }
+      .main { background: rgba(11,16,32,0.78); }
+      h1, h2, h3, h4, p { margin-top: 0; }
       .panel {
         background: var(--panel);
         border: 1px solid var(--border);
@@ -49,6 +39,7 @@
       }
       .stack { display: grid; gap: 12px; }
       .row { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+      .triple { display: grid; gap: 8px; grid-template-columns: 1.1fr 1fr 0.9fr auto; align-items: end; }
       input, textarea, button, select {
         width: 100%;
         border-radius: 12px;
@@ -58,37 +49,23 @@
         padding: 12px 14px;
         font: inherit;
       }
-      textarea { min-height: 110px; resize: vertical; }
+      textarea { min-height: 96px; resize: vertical; }
       button {
         cursor: pointer;
         border: none;
         font-weight: 700;
         background: linear-gradient(135deg, var(--accent), #5b7cff);
       }
-      button.secondary {
-        background: rgba(118, 169, 255, 0.12);
-        border: 1px solid var(--border);
-      }
-      button.success {
-        background: linear-gradient(135deg, #34d399, #10b981);
-      }
-      .meta {
-        color: var(--muted);
-        font-size: 12px;
-      }
-      .error {
-        color: var(--danger);
-        white-space: pre-wrap;
-      }
-      .warning {
-        color: var(--warning);
-        white-space: pre-wrap;
-      }
-      .seminar-list, .message-list, .roster-list {
-        display: grid;
-        gap: 10px;
-      }
-      .seminar-item, .message, .roster-item {
+      button.secondary { background: rgba(118,169,255,0.12); border: 1px solid var(--border); }
+      button.success { background: linear-gradient(135deg, #34d399, #10b981); }
+      button.ghost { background: rgba(255,255,255,0.03); border: 1px solid var(--border); }
+      .tiny-btn { width: auto; padding: 10px 12px; }
+      .meta { color: var(--muted); font-size: 12px; line-height: 1.45; }
+      .error, .warning { white-space: pre-wrap; }
+      .error { color: var(--danger); }
+      .warning { color: var(--warning); }
+      .seminar-list, .message-list, .roster-live-list, .roster-editor-list, .ref-chip-list { display: grid; gap: 10px; }
+      .seminar-item, .message, .roster-card, .editor-row, .context-card {
         border: 1px solid var(--border);
         border-radius: 14px;
         padding: 14px;
@@ -111,44 +88,32 @@
       .pill.live { background: rgba(134,239,172,0.12); color: #bbf7d0; }
       .pill.draft { background: rgba(253,230,138,0.12); color: #fde68a; }
       .pill.decided { background: rgba(192,132,252,0.15); color: #e9d5ff; }
-      .message-author {
+      .message-author, .toolbar, .split-line {
         display: flex;
         justify-content: space-between;
         align-items: center;
         gap: 12px;
-        margin-bottom: 8px;
       }
-      .message-body {
-        line-height: 1.45;
-        white-space: pre-wrap;
-      }
+      .message-body { line-height: 1.5; white-space: pre-wrap; }
       .message.evidence { background: rgba(134,239,172,0.05); }
       .message.decision { background: rgba(192,132,252,0.08); }
-      .hero {
-        display: grid;
-        grid-template-columns: 1.3fr 0.9fr;
-        gap: 16px;
-      }
+      .hero { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: 16px; }
       .hero-card {
         border: 1px solid var(--border);
         border-radius: 18px;
         padding: 18px;
         background: linear-gradient(180deg, rgba(118,169,255,0.12), rgba(118,169,255,0.03));
       }
-      .controls {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 10px;
-      }
-      @media (max-width: 1100px) {
+      .controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+      .editor-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+      .section-divider { height: 1px; background: var(--border); margin: 2px 0; }
+      @media (max-width: 1180px) {
         .app { grid-template-columns: 1fr; }
         .sidebar { border-right: 0; border-bottom: 1px solid var(--border); }
-        .hero { grid-template-columns: 1fr; }
-        .controls { grid-template-columns: 1fr 1fr; }
-        .row { grid-template-columns: 1fr; }
+        .hero, .row { grid-template-columns: 1fr; }
       }
-      @media (max-width: 700px) {
-        .controls { grid-template-columns: 1fr; }
+      @media (max-width: 720px) {
+        .controls, .triple { grid-template-columns: 1fr; }
       }
     </style>
   </head>
@@ -156,23 +121,80 @@
     <div class="app">
       <aside class="sidebar">
         <h1>Phipps HQ Seminar</h1>
-        <p class="meta">Research analyst sets the table. The room debates openly. The moderator keeps it legible.</p>
+        <p class="meta">Set the topic. Add the people. Reference the real files and workflows. Then let the room work.</p>
 
         <div class="panel stack">
-          <h2>New seminar</h2>
-          <input id="title" placeholder="Seminar title" value="Roll Cube approach seminar" />
-          <input id="topic" placeholder="Topic" value="What is the right first approach for Roll Cube?" />
-          <textarea id="concept" placeholder="General concept / baseline">We want Roll Cube to feel instantly legible, multiplayer-native, and worth returning to. The open question is whether we should prioritize the smallest competitive loop, richer systems depth, or frictionless social onboarding first.</textarea>
-          <div class="row">
-            <input id="creator-name" placeholder="Creator name" value="Nate" />
-            <input id="moderator-name" placeholder="Moderator name" value="Moderator" />
+          <h2>Create seminar</h2>
+
+          <div>
+            <div class="editor-label">Seminar title</div>
+            <input id="title" placeholder="Seminar title" value="Roll Cube approach seminar" />
           </div>
-          <input id="analyst-name" placeholder="Research analyst name" value="Research Analyst" />
-          <textarea id="roster-input">Product Strategist|product-strategist|product
-Game Systems Designer|game-systems|systems
-Full-Stack Engineer|full-stack-engineer|engineering
-UX Pragmatist|ux-pragmatist|ux</textarea>
-          <div class="meta">Roster format: Display Name | agent_id | role</div>
+
+          <div>
+            <div class="editor-label">Topic</div>
+            <input id="topic" placeholder="Topic" value="What is the right first approach for Roll Cube?" />
+          </div>
+
+          <div>
+            <div class="editor-label">Baseline concept</div>
+            <textarea id="concept" placeholder="General concept / baseline">We want Roll Cube to feel instantly legible, multiplayer-native, and worth returning to. The open question is whether we should prioritize the smallest competitive loop, richer systems depth, or frictionless social onboarding first.</textarea>
+          </div>
+
+          <div class="row">
+            <div>
+              <div class="editor-label">Creator</div>
+              <input id="creator-name" placeholder="Creator name" value="Nate" />
+            </div>
+            <div>
+              <div class="editor-label">Moderator</div>
+              <input id="moderator-name" placeholder="Moderator name" value="Moderator" />
+            </div>
+          </div>
+
+          <div>
+            <div class="editor-label">Research analyst</div>
+            <input id="analyst-name" placeholder="Research analyst name" value="Research Analyst" />
+          </div>
+
+          <div class="section-divider"></div>
+
+          <div class="stack">
+            <div class="split-line">
+              <h3 style="margin:0;">Who’s in the room</h3>
+              <button id="add-participant-btn" class="secondary tiny-btn">Add person</button>
+            </div>
+            <div class="meta">No pipe syntax. Just add rows. Remove whoever you don’t want.</div>
+            <div id="roster-editor" class="roster-editor-list"></div>
+          </div>
+
+          <div class="section-divider"></div>
+
+          <div class="stack">
+            <h3 style="margin:0;">Context references</h3>
+            <div class="meta">Use this when the seminar should look at a real project, file set, or workflow instead of debating from vibes.</div>
+            <div>
+              <div class="editor-label">Workspace path</div>
+              <input id="workspace-path" placeholder="/Users/nb/.openclaw/workspace/roll-cube" value="/Users/nb/.openclaw/workspace/roll-cube" />
+            </div>
+            <div>
+              <div class="editor-label">Relevant files (one per line)</div>
+              <textarea id="file-refs" placeholder="README.md&#10;scripts/roll-cube-nightly-audit.sh&#10;server/shared.js">README.md
+scripts/roll-cube-nightly-audit.sh
+server/shared.js</textarea>
+            </div>
+            <div>
+              <div class="editor-label">Relevant workflows (one per line)</div>
+              <textarea id="workflow-refs" placeholder="Nightly audit&#10;Cloudflare Pages deploy&#10;Prod smoke flow">Nightly audit
+Cloudflare Pages deploy
+Prod smoke flow</textarea>
+            </div>
+            <div>
+              <div class="editor-label">Operator notes</div>
+              <textarea id="reference-notes" placeholder="Anything the room should know before it starts.">Roll Cube production domain is roll-cube.com and the API is roll-cube-multiplayer.nhbaranski.workers.dev.</textarea>
+            </div>
+          </div>
+
           <button id="create-btn">Create seminar</button>
           <div id="create-error" class="error"></div>
         </div>
@@ -192,18 +214,9 @@ UX Pragmatist|ux-pragmatist|ux</textarea>
             <div id="active-warning" class="warning"></div>
           </div>
           <div class="panel stack">
-            <div>
-              <div class="meta">Current speaker</div>
-              <strong id="current-speaker">—</strong>
-            </div>
-            <div>
-              <div class="meta">Next speaker</div>
-              <strong id="next-speaker">—</strong>
-            </div>
-            <div>
-              <div class="meta">Round / turn</div>
-              <strong id="round-turn">—</strong>
-            </div>
+            <div><div class="meta">Current speaker</div><strong id="current-speaker">—</strong></div>
+            <div><div class="meta">Next speaker</div><strong id="next-speaker">—</strong></div>
+            <div><div class="meta">Round / turn</div><strong id="round-turn">—</strong></div>
           </div>
         </div>
 
@@ -226,8 +239,8 @@ UX Pragmatist|ux-pragmatist|ux</textarea>
             <div id="context-packet" class="message-body meta">No staged packet yet.</div>
           </div>
           <div class="panel stack">
-            <h3>Roster</h3>
-            <div id="roster-list" class="roster-list"></div>
+            <h3>Live roster</h3>
+            <div id="roster-live" class="roster-live-list"></div>
           </div>
         </div>
 
@@ -239,51 +252,115 @@ UX Pragmatist|ux-pragmatist|ux</textarea>
     </div>
 
     <script>
-      const API_BASE = 'https://decimal-stuart-consortium-island.trycloudflare.com';
+      const API_BASE = 'https://foundations-tests-aside-notices.trycloudflare.com';
       const state = {
         seminars: [],
         activeSeminarId: null,
         activeSeminar: null,
-        activeThread: null,
         participants: [],
         posts: [],
         refreshTimer: null,
+        draftParticipants: [
+          { display_name: 'Product Strategist', agent_id: 'product-strategist', role: 'product' },
+          { display_name: 'Game Systems Designer', agent_id: 'game-systems', role: 'systems' },
+          { display_name: 'Full-Stack Engineer', agent_id: 'full-stack-engineer', role: 'engineering' },
+          { display_name: 'UX Pragmatist', agent_id: 'ux-pragmatist', role: 'ux' },
+        ],
       };
+
+      function escapeHtml(text) {
+        return (text || '').replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c]));
+      }
 
       function setError(id, msg) {
         document.getElementById(id).textContent = msg || '';
       }
 
-      function escapeHtml(text) {
-        return (text || '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
+      function readLines(id) {
+        return document.getElementById(id).value
+          .split('\n')
+          .map(v => v.trim())
+          .filter(Boolean);
       }
 
-      function parseRoster() {
-        const raw = document.getElementById('roster-input').value.trim();
-        if (!raw) return [];
-        return raw.split('\n').map((line, idx) => {
-          const [display_name, agent_id, role] = line.split('|').map(part => (part || '').trim());
-          return {
-            display_name: display_name || `Agent ${idx + 1}`,
-            agent_id: agent_id || `agent-${idx + 1}`,
-            role: role || 'participant',
-          };
-        }).filter(Boolean);
-      }
-
-      async function request(path, options = {}) {
-        const resp = await fetch(`${API_BASE}${path}`, {
+      function request(path, options = {}) {
+        return fetch(`${API_BASE}${path}`, {
           ...options,
           headers: {
             'Content-Type': 'application/json',
             ...(options.headers || {}),
           },
+        }).then(async resp => {
+          const text = await resp.text();
+          let data;
+          try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
+          if (!resp.ok) throw new Error(data.error?.message || data.error || data.raw || `HTTP ${resp.status}`);
+          return data;
         });
-        const text = await resp.text();
-        let data;
-        try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
-        if (!resp.ok) throw new Error(data.error?.message || data.error || data.raw || `HTTP ${resp.status}`);
-        return data;
+      }
+
+      function renderRosterEditor() {
+        const root = document.getElementById('roster-editor');
+        if (!state.draftParticipants.length) {
+          root.innerHTML = '<div class="meta">Nobody added yet. Hit “Add person”.</div>';
+          return;
+        }
+        root.innerHTML = state.draftParticipants.map((participant, index) => `
+          <div class="editor-row stack">
+            <div class="triple">
+              <div>
+                <div class="editor-label">Display name</div>
+                <input data-field="display_name" data-index="${index}" value="${escapeHtml(participant.display_name)}" />
+              </div>
+              <div>
+                <div class="editor-label">Agent ID</div>
+                <input data-field="agent_id" data-index="${index}" value="${escapeHtml(participant.agent_id)}" />
+              </div>
+              <div>
+                <div class="editor-label">Role</div>
+                <input data-field="role" data-index="${index}" value="${escapeHtml(participant.role)}" />
+              </div>
+              <div>
+                <div class="editor-label">&nbsp;</div>
+                <button class="ghost tiny-btn" data-remove-index="${index}">Remove</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        root.querySelectorAll('input[data-field]').forEach(input => {
+          input.addEventListener('input', (event) => {
+            const idx = Number(event.target.dataset.index);
+            const field = event.target.dataset.field;
+            state.draftParticipants[idx][field] = event.target.value;
+          });
+        });
+        root.querySelectorAll('button[data-remove-index]').forEach(button => {
+          button.addEventListener('click', () => {
+            const idx = Number(button.dataset.removeIndex);
+            state.draftParticipants.splice(idx, 1);
+            renderRosterEditor();
+          });
+        });
+      }
+
+      function addParticipant() {
+        state.draftParticipants.push({
+          display_name: '',
+          agent_id: `agent-${state.draftParticipants.length + 1}`,
+          role: 'participant',
+        });
+        renderRosterEditor();
+      }
+
+      function cleanParticipants() {
+        return state.draftParticipants
+          .map((participant, idx) => ({
+            display_name: (participant.display_name || '').trim() || `Agent ${idx + 1}`,
+            agent_id: (participant.agent_id || '').trim() || `agent-${idx + 1}`,
+            role: (participant.role || '').trim() || 'participant',
+          }))
+          .filter(p => p.display_name && p.agent_id);
       }
 
       function renderSeminars() {
@@ -293,7 +370,7 @@ UX Pragmatist|ux-pragmatist|ux</textarea>
           return;
         }
         root.innerHTML = state.seminars.map(seminar => `
-          <div class="seminar-item ${seminar.seminar_id === state.activeSeminarId ? 'active' : ''}" data-seminar-id="${seminar.seminar_id}">
+          <div class="seminar-item ${seminar.seminar_id === state.activeSeminarId ? 'active' : ''}" data-id="${seminar.seminar_id}">
             <div class="message-author">
               <strong>${escapeHtml(seminar.title)}</strong>
               <span class="pill ${escapeHtml(seminar.status)}">${escapeHtml(seminar.status)}</span>
@@ -302,24 +379,22 @@ UX Pragmatist|ux-pragmatist|ux</textarea>
             <div class="meta">Round ${seminar.round_index} · Turn ${seminar.turn_index}</div>
           </div>
         `).join('');
-        root.querySelectorAll('.seminar-item').forEach(el => {
-          el.addEventListener('click', () => loadSeminar(el.dataset.seminarId));
-        });
+        root.querySelectorAll('.seminar-item').forEach(item => item.addEventListener('click', () => loadSeminar(item.dataset.id)));
       }
 
-      function renderRoster() {
-        const root = document.getElementById('roster-list');
+      function renderLiveRoster() {
+        const root = document.getElementById('roster-live');
         if (!state.participants.length) {
-          root.innerHTML = '<div class="meta">No participants loaded.</div>';
+          root.innerHTML = '<div class="meta">No live roster yet.</div>';
           return;
         }
         root.innerHTML = state.participants.map(participant => {
-          const isCurrent = participant.agent_id === state.activeSeminar?.current_speaker_id;
+          const onDeck = participant.agent_id === state.activeSeminar?.current_speaker_id;
           return `
-            <div class="roster-item">
+            <div class="roster-card">
               <div class="message-author">
                 <strong>${escapeHtml(participant.display_name || participant.agent_id)}</strong>
-                <span class="pill ${isCurrent ? 'live' : ''}">${escapeHtml(participant.role || 'participant')}</span>
+                <span class="pill ${onDeck ? 'live' : ''}">${escapeHtml(participant.role || 'participant')}</span>
               </div>
               <div class="meta">${escapeHtml(participant.agent_id || '')}</div>
             </div>
@@ -330,21 +405,21 @@ UX Pragmatist|ux-pragmatist|ux</textarea>
       function renderMessages() {
         const root = document.getElementById('messages');
         if (!state.posts.length) {
-          root.innerHTML = '<div class="meta">No seminar transcript yet.</div>';
+          root.innerHTML = '<div class="meta">No transcript yet.</div>';
           return;
         }
         root.innerHTML = state.posts.map(post => `
           <div class="message ${escapeHtml(post.post_type)}">
             <div class="message-author">
               <strong>${escapeHtml(post.author_name || post.author_type || 'Speaker')}</strong>
-              <span class="pill ${escapeHtml(post.post_type === 'decision' ? 'decided' : post.post_type === 'evidence' ? 'live' : '')}">${escapeHtml(post.post_type)}</span>
+              <span class="pill ${post.post_type === 'decision' ? 'decided' : post.post_type === 'evidence' ? 'live' : ''}">${escapeHtml(post.post_type)}</span>
             </div>
             <div class="message-body">${escapeHtml(post.content).replace(/\n/g, '<br>')}</div>
           </div>
         `).join('');
       }
 
-      function renderSeminar() {
+      function renderActiveSeminar() {
         const seminar = state.activeSeminar;
         if (!seminar) {
           document.getElementById('active-title').textContent = 'Pick or create a seminar';
@@ -354,25 +429,21 @@ UX Pragmatist|ux-pragmatist|ux</textarea>
           document.getElementById('next-speaker').textContent = '—';
           document.getElementById('round-turn').textContent = '—';
           document.getElementById('context-packet').textContent = 'No staged packet yet.';
-          renderRoster();
+          renderLiveRoster();
           renderMessages();
           return;
         }
         const nextSpeaker = state.participants.find(p => p.agent_id === seminar.current_speaker_id);
-        const currentIndex = Math.max(state.participants.findIndex(p => p.agent_id === seminar.current_speaker_id) - 1, -1);
-        const currentSpeaker = currentIndex >= 0 ? state.participants[currentIndex] : null;
         document.getElementById('active-title').textContent = seminar.title;
         document.getElementById('active-meta').textContent = `${seminar.topic} · ${seminar.status}`;
-        document.getElementById('active-warning').textContent = seminar.status === 'draft'
-          ? 'Stage the seminar first so the research analyst can set the table.'
-          : '';
-        document.getElementById('current-speaker').textContent = currentSpeaker?.display_name || 'Moderator / room';
+        document.getElementById('active-warning').textContent = seminar.status === 'draft' ? 'Stage the seminar first so the research analyst can set the table.' : '';
+        document.getElementById('current-speaker').textContent = nextSpeaker?.display_name || 'Moderator / room';
         document.getElementById('next-speaker').textContent = nextSpeaker?.display_name || '—';
         document.getElementById('round-turn').textContent = `Round ${seminar.round_index} · Turn ${seminar.turn_index}`;
         document.getElementById('context-packet').innerHTML = seminar.context_packet
           ? escapeHtml(seminar.context_packet).replace(/\n/g, '<br>')
           : '<span class="meta">No staged packet yet.</span>';
-        renderRoster();
+        renderLiveRoster();
         renderMessages();
       }
 
@@ -380,24 +451,24 @@ UX Pragmatist|ux-pragmatist|ux</textarea>
         const data = await request('/api/seminars');
         state.seminars = data.seminars || [];
         renderSeminars();
-        if (state.activeSeminarId) {
-          const stillThere = state.seminars.find(s => s.seminar_id === state.activeSeminarId);
-          if (stillThere) await loadSeminar(state.activeSeminarId, false);
+        if (state.activeSeminarId && state.seminars.some(s => s.seminar_id === state.activeSeminarId)) {
+          await loadSeminar(state.activeSeminarId, false);
         }
       }
 
-      async function loadSeminar(seminarId, repaintList = true) {
-        const data = await request(`/api/seminars/${seminarId}`);
-        state.activeSeminarId = seminarId;
+      async function loadSeminar(id, repaintList = true) {
+        const data = await request(`/api/seminars/${id}`);
+        state.activeSeminarId = id;
         state.activeSeminar = data.seminar;
-        state.activeThread = data.thread;
         state.participants = data.participants || [];
         state.posts = data.posts || [];
         if (repaintList) renderSeminars();
-        renderSeminar();
+        renderActiveSeminar();
       }
 
       async function createSeminar() {
+        const participants = cleanParticipants();
+        if (!participants.length) throw new Error('Add at least one participant.');
         const payload = {
           title: document.getElementById('title').value.trim(),
           topic: document.getElementById('topic').value.trim(),
@@ -405,12 +476,13 @@ UX Pragmatist|ux-pragmatist|ux</textarea>
           creator_name: document.getElementById('creator-name').value.trim(),
           moderator_name: document.getElementById('moderator-name').value.trim(),
           research_analyst_name: document.getElementById('analyst-name').value.trim(),
-          participants: parseRoster(),
+          participants,
+          workspace_path: document.getElementById('workspace-path').value.trim(),
+          file_refs: readLines('file-refs'),
+          workflow_refs: readLines('workflow-refs'),
+          reference_notes: document.getElementById('reference-notes').value.trim(),
         };
-        const data = await request('/api/seminars', {
-          method: 'POST',
-          body: JSON.stringify(payload),
-        });
+        const data = await request('/api/seminars', { method: 'POST', body: JSON.stringify(payload) });
         setError('create-error', '');
         await loadSeminars();
         await loadSeminar(data.seminar.seminar_id);
@@ -431,17 +503,12 @@ UX Pragmatist|ux-pragmatist|ux</textarea>
       }
 
       async function runManyTurns(count) {
-        for (let i = 0; i < count; i++) {
-          await runTurn();
-        }
+        for (let i = 0; i < count; i++) await runTurn();
       }
 
       async function summarize(finalize = false) {
         if (!state.activeSeminarId) return;
-        await request(`/api/seminars/${state.activeSeminarId}/summary`, {
-          method: 'POST',
-          body: JSON.stringify({ finalize }),
-        });
+        await request(`/api/seminars/${state.activeSeminarId}/summary`, { method: 'POST', body: JSON.stringify({ finalize }) });
         await loadSeminars();
         await loadSeminar(state.activeSeminarId);
       }
@@ -453,6 +520,7 @@ UX Pragmatist|ux-pragmatist|ux</textarea>
         }, 5000);
       }
 
+      document.getElementById('add-participant-btn').addEventListener('click', addParticipant);
       document.getElementById('create-btn').addEventListener('click', () => createSeminar().catch(e => setError('create-error', e.message)));
       document.getElementById('stage-btn').addEventListener('click', () => stageSeminar().catch(e => setError('action-error', e.message)));
       document.getElementById('turn-btn').addEventListener('click', () => runTurn().catch(e => setError('action-error', e.message)));
@@ -461,6 +529,8 @@ UX Pragmatist|ux-pragmatist|ux</textarea>
       document.getElementById('finalize-btn').addEventListener('click', () => summarize(true).catch(e => setError('action-error', e.message)));
       document.getElementById('refresh-btn').addEventListener('click', () => loadSeminars().catch(e => setError('action-error', e.message)));
 
+      renderRosterEditor();
+      renderActiveSeminar();
       scheduleRefresh();
       loadSeminars().catch(e => setError('action-error', e.message));
     </script>
