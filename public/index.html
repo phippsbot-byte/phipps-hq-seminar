@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phipps HQ Seminar</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #09101d;
+        --panel: #121a30;
+        --panel-2: #0f1630;
+        --panel-3: #182344;
+        --text: #e7ecf7;
+        --muted: #95a2c3;
+        --accent: #76a9ff;
+        --accent-2: #86efac;
+        --border: rgba(140, 160, 210, 0.22);
+        --danger: #fca5a5;
+        --warning: #fde68a;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(180deg, #08101d 0%, var(--bg) 100%);
+        color: var(--text);
+      }
+      .app {
+        display: grid;
+        grid-template-columns: 380px 1fr;
+        min-height: 100vh;
+      }
+      .sidebar, .main { padding: 20px; }
+      .sidebar {
+        border-right: 1px solid var(--border);
+        background: rgba(9, 13, 25, 0.88);
+      }
+      .main {
+        background: rgba(11, 16, 32, 0.76);
+      }
+      h1, h2, h3, p { margin-top: 0; }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .stack { display: grid; gap: 12px; }
+      .row { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+      input, textarea, button, select {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--panel-2);
+        color: var(--text);
+        padding: 12px 14px;
+        font: inherit;
+      }
+      textarea { min-height: 110px; resize: vertical; }
+      button {
+        cursor: pointer;
+        border: none;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--accent), #5b7cff);
+      }
+      button.secondary {
+        background: rgba(118, 169, 255, 0.12);
+        border: 1px solid var(--border);
+      }
+      button.success {
+        background: linear-gradient(135deg, #34d399, #10b981);
+      }
+      .meta {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .error {
+        color: var(--danger);
+        white-space: pre-wrap;
+      }
+      .warning {
+        color: var(--warning);
+        white-space: pre-wrap;
+      }
+      .seminar-list, .message-list, .roster-list {
+        display: grid;
+        gap: 10px;
+      }
+      .seminar-item, .message, .roster-item {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 14px;
+        background: rgba(255,255,255,0.02);
+      }
+      .seminar-item { cursor: pointer; }
+      .seminar-item.active { outline: 2px solid rgba(118,169,255,0.55); }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: rgba(118,169,255,0.12);
+        color: #d9e6ff;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .pill.live { background: rgba(134,239,172,0.12); color: #bbf7d0; }
+      .pill.draft { background: rgba(253,230,138,0.12); color: #fde68a; }
+      .pill.decided { background: rgba(192,132,252,0.15); color: #e9d5ff; }
+      .message-author {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+      .message-body {
+        line-height: 1.45;
+        white-space: pre-wrap;
+      }
+      .message.evidence { background: rgba(134,239,172,0.05); }
+      .message.decision { background: rgba(192,132,252,0.08); }
+      .hero {
+        display: grid;
+        grid-template-columns: 1.3fr 0.9fr;
+        gap: 16px;
+      }
+      .hero-card {
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 18px;
+        background: linear-gradient(180deg, rgba(118,169,255,0.12), rgba(118,169,255,0.03));
+      }
+      .controls {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+      @media (max-width: 1100px) {
+        .app { grid-template-columns: 1fr; }
+        .sidebar { border-right: 0; border-bottom: 1px solid var(--border); }
+        .hero { grid-template-columns: 1fr; }
+        .controls { grid-template-columns: 1fr 1fr; }
+        .row { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 700px) {
+        .controls { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <h1>Phipps HQ Seminar</h1>
+        <p class="meta">Research analyst sets the table. The room debates openly. The moderator keeps it legible.</p>
+
+        <div class="panel stack">
+          <h2>New seminar</h2>
+          <input id="title" placeholder="Seminar title" value="Roll Cube approach seminar" />
+          <input id="topic" placeholder="Topic" value="What is the right first approach for Roll Cube?" />
+          <textarea id="concept" placeholder="General concept / baseline">We want Roll Cube to feel instantly legible, multiplayer-native, and worth returning to. The open question is whether we should prioritize the smallest competitive loop, richer systems depth, or frictionless social onboarding first.</textarea>
+          <div class="row">
+            <input id="creator-name" placeholder="Creator name" value="Nate" />
+            <input id="moderator-name" placeholder="Moderator name" value="Moderator" />
+          </div>
+          <input id="analyst-name" placeholder="Research analyst name" value="Research Analyst" />
+          <textarea id="roster-input">Product Strategist|product-strategist|product
+Game Systems Designer|game-systems|systems
+Full-Stack Engineer|full-stack-engineer|engineering
+UX Pragmatist|ux-pragmatist|ux</textarea>
+          <div class="meta">Roster format: Display Name | agent_id | role</div>
+          <button id="create-btn">Create seminar</button>
+          <div id="create-error" class="error"></div>
+        </div>
+
+        <div class="panel">
+          <h2>Seminars</h2>
+          <div id="seminars" class="seminar-list"></div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="hero">
+          <div class="hero-card">
+            <div class="meta">Current session</div>
+            <h2 id="active-title">Pick or create a seminar</h2>
+            <div id="active-meta" class="meta"></div>
+            <div id="active-warning" class="warning"></div>
+          </div>
+          <div class="panel stack">
+            <div>
+              <div class="meta">Current speaker</div>
+              <strong id="current-speaker">—</strong>
+            </div>
+            <div>
+              <div class="meta">Next speaker</div>
+              <strong id="next-speaker">—</strong>
+            </div>
+            <div>
+              <div class="meta">Round / turn</div>
+              <strong id="round-turn">—</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel stack">
+          <h3>Seminar controls</h3>
+          <div class="controls">
+            <button id="stage-btn" class="secondary">Stage seminar</button>
+            <button id="turn-btn">Run next turn</button>
+            <button id="three-turns-btn" class="secondary">Run 3 turns</button>
+            <button id="summary-btn" class="secondary">Moderator summary</button>
+            <button id="finalize-btn" class="success">Finalize memo</button>
+            <button id="refresh-btn" class="secondary">Refresh</button>
+          </div>
+          <div id="action-error" class="error"></div>
+        </div>
+
+        <div class="row">
+          <div class="panel stack">
+            <h3>Research packet</h3>
+            <div id="context-packet" class="message-body meta">No staged packet yet.</div>
+          </div>
+          <div class="panel stack">
+            <h3>Roster</h3>
+            <div id="roster-list" class="roster-list"></div>
+          </div>
+        </div>
+
+        <div class="panel stack">
+          <h3>Transcript</h3>
+          <div id="messages" class="message-list"></div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const API_BASE = 'https://decimal-stuart-consortium-island.trycloudflare.com';
+      const state = {
+        seminars: [],
+        activeSeminarId: null,
+        activeSeminar: null,
+        activeThread: null,
+        participants: [],
+        posts: [],
+        refreshTimer: null,
+      };
+
+      function setError(id, msg) {
+        document.getElementById(id).textContent = msg || '';
+      }
+
+      function escapeHtml(text) {
+        return (text || '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
+      }
+
+      function parseRoster() {
+        const raw = document.getElementById('roster-input').value.trim();
+        if (!raw) return [];
+        return raw.split('\n').map((line, idx) => {
+          const [display_name, agent_id, role] = line.split('|').map(part => (part || '').trim());
+          return {
+            display_name: display_name || `Agent ${idx + 1}`,
+            agent_id: agent_id || `agent-${idx + 1}`,
+            role: role || 'participant',
+          };
+        }).filter(Boolean);
+      }
+
+      async function request(path, options = {}) {
+        const resp = await fetch(`${API_BASE}${path}`, {
+          ...options,
+          headers: {
+            'Content-Type': 'application/json',
+            ...(options.headers || {}),
+          },
+        });
+        const text = await resp.text();
+        let data;
+        try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
+        if (!resp.ok) throw new Error(data.error?.message || data.error || data.raw || `HTTP ${resp.status}`);
+        return data;
+      }
+
+      function renderSeminars() {
+        const root = document.getElementById('seminars');
+        if (!state.seminars.length) {
+          root.innerHTML = '<div class="meta">No seminars yet.</div>';
+          return;
+        }
+        root.innerHTML = state.seminars.map(seminar => `
+          <div class="seminar-item ${seminar.seminar_id === state.activeSeminarId ? 'active' : ''}" data-seminar-id="${seminar.seminar_id}">
+            <div class="message-author">
+              <strong>${escapeHtml(seminar.title)}</strong>
+              <span class="pill ${escapeHtml(seminar.status)}">${escapeHtml(seminar.status)}</span>
+            </div>
+            <div class="meta">${escapeHtml(seminar.topic)}</div>
+            <div class="meta">Round ${seminar.round_index} · Turn ${seminar.turn_index}</div>
+          </div>
+        `).join('');
+        root.querySelectorAll('.seminar-item').forEach(el => {
+          el.addEventListener('click', () => loadSeminar(el.dataset.seminarId));
+        });
+      }
+
+      function renderRoster() {
+        const root = document.getElementById('roster-list');
+        if (!state.participants.length) {
+          root.innerHTML = '<div class="meta">No participants loaded.</div>';
+          return;
+        }
+        root.innerHTML = state.participants.map(participant => {
+          const isCurrent = participant.agent_id === state.activeSeminar?.current_speaker_id;
+          return `
+            <div class="roster-item">
+              <div class="message-author">
+                <strong>${escapeHtml(participant.display_name || participant.agent_id)}</strong>
+                <span class="pill ${isCurrent ? 'live' : ''}">${escapeHtml(participant.role || 'participant')}</span>
+              </div>
+              <div class="meta">${escapeHtml(participant.agent_id || '')}</div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function renderMessages() {
+        const root = document.getElementById('messages');
+        if (!state.posts.length) {
+          root.innerHTML = '<div class="meta">No seminar transcript yet.</div>';
+          return;
+        }
+        root.innerHTML = state.posts.map(post => `
+          <div class="message ${escapeHtml(post.post_type)}">
+            <div class="message-author">
+              <strong>${escapeHtml(post.author_name || post.author_type || 'Speaker')}</strong>
+              <span class="pill ${escapeHtml(post.post_type === 'decision' ? 'decided' : post.post_type === 'evidence' ? 'live' : '')}">${escapeHtml(post.post_type)}</span>
+            </div>
+            <div class="message-body">${escapeHtml(post.content).replace(/\n/g, '<br>')}</div>
+          </div>
+        `).join('');
+      }
+
+      function renderSeminar() {
+        const seminar = state.activeSeminar;
+        if (!seminar) {
+          document.getElementById('active-title').textContent = 'Pick or create a seminar';
+          document.getElementById('active-meta').textContent = '';
+          document.getElementById('active-warning').textContent = '';
+          document.getElementById('current-speaker').textContent = '—';
+          document.getElementById('next-speaker').textContent = '—';
+          document.getElementById('round-turn').textContent = '—';
+          document.getElementById('context-packet').textContent = 'No staged packet yet.';
+          renderRoster();
+          renderMessages();
+          return;
+        }
+        const nextSpeaker = state.participants.find(p => p.agent_id === seminar.current_speaker_id);
+        const currentIndex = Math.max(state.participants.findIndex(p => p.agent_id === seminar.current_speaker_id) - 1, -1);
+        const currentSpeaker = currentIndex >= 0 ? state.participants[currentIndex] : null;
+        document.getElementById('active-title').textContent = seminar.title;
+        document.getElementById('active-meta').textContent = `${seminar.topic} · ${seminar.status}`;
+        document.getElementById('active-warning').textContent = seminar.status === 'draft'
+          ? 'Stage the seminar first so the research analyst can set the table.'
+          : '';
+        document.getElementById('current-speaker').textContent = currentSpeaker?.display_name || 'Moderator / room';
+        document.getElementById('next-speaker').textContent = nextSpeaker?.display_name || '—';
+        document.getElementById('round-turn').textContent = `Round ${seminar.round_index} · Turn ${seminar.turn_index}`;
+        document.getElementById('context-packet').innerHTML = seminar.context_packet
+          ? escapeHtml(seminar.context_packet).replace(/\n/g, '<br>')
+          : '<span class="meta">No staged packet yet.</span>';
+        renderRoster();
+        renderMessages();
+      }
+
+      async function loadSeminars() {
+        const data = await request('/api/seminars');
+        state.seminars = data.seminars || [];
+        renderSeminars();
+        if (state.activeSeminarId) {
+          const stillThere = state.seminars.find(s => s.seminar_id === state.activeSeminarId);
+          if (stillThere) await loadSeminar(state.activeSeminarId, false);
+        }
+      }
+
+      async function loadSeminar(seminarId, repaintList = true) {
+        const data = await request(`/api/seminars/${seminarId}`);
+        state.activeSeminarId = seminarId;
+        state.activeSeminar = data.seminar;
+        state.activeThread = data.thread;
+        state.participants = data.participants || [];
+        state.posts = data.posts || [];
+        if (repaintList) renderSeminars();
+        renderSeminar();
+      }
+
+      async function createSeminar() {
+        const payload = {
+          title: document.getElementById('title').value.trim(),
+          topic: document.getElementById('topic').value.trim(),
+          concept: document.getElementById('concept').value.trim(),
+          creator_name: document.getElementById('creator-name').value.trim(),
+          moderator_name: document.getElementById('moderator-name').value.trim(),
+          research_analyst_name: document.getElementById('analyst-name').value.trim(),
+          participants: parseRoster(),
+        };
+        const data = await request('/api/seminars', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
+        setError('create-error', '');
+        await loadSeminars();
+        await loadSeminar(data.seminar.seminar_id);
+      }
+
+      async function stageSeminar() {
+        if (!state.activeSeminarId) return;
+        await request(`/api/seminars/${state.activeSeminarId}/stage`, { method: 'POST', body: '{}' });
+        await loadSeminars();
+        await loadSeminar(state.activeSeminarId);
+      }
+
+      async function runTurn() {
+        if (!state.activeSeminarId) return;
+        await request(`/api/seminars/${state.activeSeminarId}/turn`, { method: 'POST', body: '{}' });
+        await loadSeminars();
+        await loadSeminar(state.activeSeminarId);
+      }
+
+      async function runManyTurns(count) {
+        for (let i = 0; i < count; i++) {
+          await runTurn();
+        }
+      }
+
+      async function summarize(finalize = false) {
+        if (!state.activeSeminarId) return;
+        await request(`/api/seminars/${state.activeSeminarId}/summary`, {
+          method: 'POST',
+          body: JSON.stringify({ finalize }),
+        });
+        await loadSeminars();
+        await loadSeminar(state.activeSeminarId);
+      }
+
+      function scheduleRefresh() {
+        if (state.refreshTimer) clearInterval(state.refreshTimer);
+        state.refreshTimer = window.setInterval(() => {
+          loadSeminars().catch(e => setError('action-error', e.message));
+        }, 5000);
+      }
+
+      document.getElementById('create-btn').addEventListener('click', () => createSeminar().catch(e => setError('create-error', e.message)));
+      document.getElementById('stage-btn').addEventListener('click', () => stageSeminar().catch(e => setError('action-error', e.message)));
+      document.getElementById('turn-btn').addEventListener('click', () => runTurn().catch(e => setError('action-error', e.message)));
+      document.getElementById('three-turns-btn').addEventListener('click', () => runManyTurns(3).catch(e => setError('action-error', e.message)));
+      document.getElementById('summary-btn').addEventListener('click', () => summarize(false).catch(e => setError('action-error', e.message)));
+      document.getElementById('finalize-btn').addEventListener('click', () => summarize(true).catch(e => setError('action-error', e.message)));
+      document.getElementById('refresh-btn').addEventListener('click', () => loadSeminars().catch(e => setError('action-error', e.message)));
+
+      scheduleRefresh();
+      loadSeminars().catch(e => setError('action-error', e.message));
+    </script>
+  </body>
+</html>
