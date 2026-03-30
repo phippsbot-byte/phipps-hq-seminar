@@ -116,6 +116,24 @@
       .controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
       .editor-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
       .section-divider { height: 1px; background: var(--border); margin: 2px 0; }
+      .wizard-steps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+      .wizard-step {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 8px;
+        text-align: center;
+        font-size: 11px;
+        color: var(--muted);
+        background: rgba(255,255,255,0.02);
+      }
+      .wizard-step.active {
+        color: var(--text);
+        background: rgba(118,169,255,0.12);
+        border-color: rgba(118,169,255,0.55);
+      }
+      .wizard-panel { display: none; }
+      .wizard-panel.active { display: grid; gap: 12px; }
+      .wizard-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
       @media (max-width: 1180px) {
         .app { grid-template-columns: 1fr; }
         .sidebar { border-right: 0; border-bottom: 1px solid var(--border); }
@@ -133,69 +151,71 @@
         <p class="meta">Set the topic. Add the people. Reference the real files and workflows. Then let the room work.</p>
 
         <div class="panel stack">
-          <h2>Create seminar</h2>
+          <h2>Create a seminar</h2>
+          <div class="meta">Define the question, choose the room, add context, then launch.</div>
 
-          <div>
+          <div class="wizard-steps">
+            <div class="wizard-step active" data-step-indicator="1">1. Name</div>
+            <div class="wizard-step" data-step-indicator="2">2. Question</div>
+            <div class="wizard-step" data-step-indicator="3">3. Baseline</div>
+            <div class="wizard-step" data-step-indicator="4">4. Room</div>
+            <div class="wizard-step" data-step-indicator="5">5. Context</div>
+            <div class="wizard-step" data-step-indicator="6">6. Launch</div>
+          </div>
+
+          <div class="wizard-panel active" data-step-panel="1">
             <div class="editor-label">Seminar title</div>
             <input id="title" placeholder="Seminar title" value="Roll Cube approach seminar" />
+            <div class="meta">Name the room so it’s obvious what decision this seminar is for.</div>
           </div>
 
-          <div>
-            <div class="editor-label">Topic</div>
+          <div class="wizard-panel" data-step-panel="2">
+            <div class="editor-label">Core question</div>
             <input id="topic" placeholder="Topic" value="What is the right first approach for Roll Cube?" />
+            <div class="meta">Phrase this like a real decision question, not a theme.</div>
           </div>
 
-          <div>
+          <div class="wizard-panel" data-step-panel="3">
             <div class="editor-label">Baseline concept</div>
             <textarea id="concept" placeholder="General concept / baseline">We want Roll Cube to feel instantly legible, multiplayer-native, and worth returning to. The open question is whether we should prioritize the smallest competitive loop, richer systems depth, or frictionless social onboarding first.</textarea>
-          </div>
-
-          <div class="row">
-            <div>
-              <div class="editor-label">Creator</div>
-              <input id="creator-name" placeholder="Creator name" value="Nate" />
+            <div class="row">
+              <div>
+                <div class="editor-label">Creator</div>
+                <input id="creator-name" placeholder="Creator name" value="Nate" />
+              </div>
+              <div>
+                <div class="editor-label">Moderator</div>
+                <input id="moderator-name" placeholder="Moderator name" value="Moderator" />
+              </div>
             </div>
             <div>
-              <div class="editor-label">Moderator</div>
-              <input id="moderator-name" placeholder="Moderator name" value="Moderator" />
+              <div class="editor-label">Research analyst</div>
+              <input id="analyst-name" placeholder="Research analyst name" value="Research Analyst" />
             </div>
           </div>
 
-          <div>
-            <div class="editor-label">Research analyst</div>
-            <input id="analyst-name" placeholder="Research analyst name" value="Research Analyst" />
-          </div>
-
-          <div class="section-divider"></div>
-
-          <div class="stack">
+          <div class="wizard-panel" data-step-panel="4">
             <div class="split-line">
-              <h3 style="margin:0;">Quick presets</h3>
+              <h3 style="margin:0;">Fast starts</h3>
               <button id="reset-create-btn" class="ghost tiny-btn">Reset</button>
             </div>
             <div class="preset-grid">
-              <button id="preset-roll-cube" class="secondary">Load Roll-Cube preset</button>
-              <button id="preset-dolen" class="secondary">Load Dolen preset</button>
+              <button id="preset-roll-cube" class="secondary">Use Roll-Cube preset</button>
+              <button id="preset-dolen" class="secondary">Use Dolen preset</button>
             </div>
-            <div class="meta">Presets fill topic, roster, and context references so you’re not rebuilding the room from scratch every time.</div>
-          </div>
-
-          <div class="section-divider"></div>
-
-          <div class="stack">
+            <div class="meta">Optional. Presets prefill the question, roster, and references.</div>
+            <div class="section-divider"></div>
             <div class="split-line">
               <h3 style="margin:0;">Who’s in the room</h3>
               <button id="add-participant-btn" class="secondary tiny-btn">Add person</button>
             </div>
-            <div class="meta">Add people directly. Remove whoever you don’t want. Roles are just lightweight framing, not rigid costumes.</div>
+            <div class="meta">Add people directly. Roles are lightweight framing. Model presets decide speed vs depth.</div>
             <div id="roster-editor" class="roster-editor-list"></div>
           </div>
 
-          <div class="section-divider"></div>
-
-          <div class="stack">
-            <h3 style="margin:0;">Context references</h3>
-            <div class="meta">Use this when the seminar should look at a real project, file set, or workflow instead of debating from vibes.</div>
+          <div class="wizard-panel" data-step-panel="5">
+            <h3 style="margin:0;">Project context</h3>
+            <div class="meta">Point the room at real assets so the analyst can anchor the seminar to actual work.</div>
             <div>
               <div class="editor-label">Workspace path</div>
               <input id="workspace-path" placeholder="/Users/nb/.openclaw/workspace/roll-cube" value="/Users/nb/.openclaw/workspace/roll-cube" />
@@ -218,12 +238,22 @@ Prod smoke flow</textarea>
             </div>
           </div>
 
-          <button id="create-btn">Create seminar</button>
-          <div id="create-error" class="error"></div>
-        </div>
+          <div class="wizard-panel" data-step-panel="6">
+            <h3 style="margin:0;">Launch</h3>
+            <div class="meta">Sanity check the setup, then create the seminar and start the room.</div>
+            <div class="meta">After creation, use the run panel on the right to stage the seminar, run turns, and ask the moderator for synthesis.</div>
+            <button id="create-btn">Create seminar</button>
+            <div id="create-error" class="error"></div>
+          </div>
 
+          <div class="wizard-nav">
+            <button id="wizard-back-btn" class="ghost">Back</button>
+            <button id="wizard-next-btn" class="secondary">Next</button>
+          </div>
+        </div>
         <div class="panel">
-          <h2>Seminars</h2>
+          <h2>Existing seminars</h2>
+          <div class="meta">Secondary. Use this when you want to reopen or continue an existing room.</div>
           <div id="seminars" class="seminar-list"></div>
         </div>
       </aside>
@@ -244,14 +274,15 @@ Prod smoke flow</textarea>
           </div>
         </div>
 
-        <div class="panel stack">
-          <h3>Seminar controls</h3>
+        <div id="run-room-panel" class="panel stack" style="display:none;">
+          <h3>Run the room</h3>
+          <div class="meta">Once a seminar exists, stage it, let the room talk, then ask the moderator to synthesize.</div>
           <div class="controls">
-            <button id="stage-btn" class="secondary">Stage seminar</button>
-            <button id="turn-btn">Run next turn</button>
-            <button id="three-turns-btn" class="secondary">Run 3 turns</button>
-            <button id="summary-btn" class="secondary">Moderator summary</button>
-            <button id="finalize-btn" class="success">Finalize memo</button>
+            <button id="stage-btn" class="secondary">1. Stage seminar</button>
+            <button id="turn-btn">2. Run next turn</button>
+            <button id="three-turns-btn" class="secondary">2b. Run 3 turns</button>
+            <button id="summary-btn" class="secondary">3. Moderator summary</button>
+            <button id="finalize-btn" class="success">4. Finalize memo</button>
             <button id="refresh-btn" class="secondary">Refresh</button>
           </div>
           <div id="action-error" class="error"></div>
@@ -316,6 +347,7 @@ Prod smoke flow</textarea>
         participants: [],
         posts: [],
         refreshTimer: null,
+        wizardStep: 1,
         draftParticipants: PRESETS.rollCube.participants.map(p => ({ ...p })),
       };
 
@@ -348,6 +380,27 @@ Prod smoke flow</textarea>
           if (!resp.ok) throw new Error(data.error?.message || data.error || data.raw || `HTTP ${resp.status}`);
           return data;
         });
+      }
+
+      function renderWizard() {
+        document.querySelectorAll('[data-step-indicator]').forEach(node => {
+          node.classList.toggle('active', Number(node.dataset.stepIndicator) === state.wizardStep);
+        });
+        document.querySelectorAll('[data-step-panel]').forEach(node => {
+          node.classList.toggle('active', Number(node.dataset.stepPanel) === state.wizardStep);
+        });
+        document.getElementById('wizard-back-btn').disabled = state.wizardStep === 1;
+        document.getElementById('wizard-next-btn').style.display = state.wizardStep === 6 ? 'none' : 'block';
+      }
+
+      function nextWizardStep() {
+        state.wizardStep = Math.min(6, state.wizardStep + 1);
+        renderWizard();
+      }
+
+      function prevWizardStep() {
+        state.wizardStep = Math.max(1, state.wizardStep - 1);
+        renderWizard();
       }
 
       function renderRosterEditor() {
@@ -439,6 +492,8 @@ Prod smoke flow</textarea>
 
       function resetCreateForm() {
         applyPreset('rollCube');
+        state.wizardStep = 1;
+        renderWizard();
         setError('create-error', '');
       }
 
@@ -530,8 +585,9 @@ Prod smoke flow</textarea>
       function renderActiveSeminar() {
         const seminar = state.activeSeminar;
         if (!seminar) {
-          document.getElementById('active-title').textContent = 'Pick or create a seminar';
-          document.getElementById('active-meta').textContent = '';
+          document.getElementById('run-room-panel').style.display = 'none';
+          document.getElementById('active-title').textContent = 'Create a seminar to start';
+          document.getElementById('active-meta').textContent = 'The main job on this page is setup first, discussion second.';
           document.getElementById('active-warning').textContent = '';
           document.getElementById('last-speaker').textContent = '—';
           document.getElementById('current-speaker').textContent = '—';
@@ -542,6 +598,7 @@ Prod smoke flow</textarea>
           renderMessages();
           return;
         }
+        document.getElementById('run-room-panel').style.display = 'grid';
         const onDeck = state.participants.find(p => p.agent_id === seminar.current_speaker_id) || null;
         const recentSpeakerPost = [...state.posts].reverse().find(post => post.author_type === 'agent' && post.author_name !== seminar.moderator_name && post.author_name !== seminar.research_analyst_name) || null;
         const lastSpeaker = recentSpeakerPost ? state.participants.find(p => p.display_name === recentSpeakerPost.author_name) || { display_name: recentSpeakerPost.author_name } : null;
@@ -636,6 +693,8 @@ Prod smoke flow</textarea>
         }, 5000);
       }
 
+      document.getElementById('wizard-back-btn').addEventListener('click', prevWizardStep);
+      document.getElementById('wizard-next-btn').addEventListener('click', nextWizardStep);
       document.getElementById('preset-roll-cube').addEventListener('click', () => applyPreset('rollCube'));
       document.getElementById('preset-dolen').addEventListener('click', () => applyPreset('dolen'));
       document.getElementById('reset-create-btn').addEventListener('click', resetCreateForm);
@@ -649,6 +708,7 @@ Prod smoke flow</textarea>
       document.getElementById('refresh-btn').addEventListener('click', () => loadSeminars().catch(e => setError('action-error', e.message)));
 
       resetCreateForm();
+      renderWizard();
       renderActiveSeminar();
       scheduleRefresh();
       loadSeminars().catch(e => setError('action-error', e.message));
