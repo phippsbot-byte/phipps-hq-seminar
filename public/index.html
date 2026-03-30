@@ -98,6 +98,14 @@
       .message.evidence { background: rgba(134,239,172,0.05); }
       .message.decision { background: rgba(192,132,252,0.08); }
       .hero { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: 16px; }
+      .hero-stats { display: grid; grid-template-columns: 1fr; gap: 10px; }
+      .stat-card {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 12px 14px;
+        background: rgba(255,255,255,0.02);
+      }
+      .preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
       .hero-card {
         border: 1px solid var(--border);
         border-radius: 18px;
@@ -161,10 +169,24 @@
 
           <div class="stack">
             <div class="split-line">
+              <h3 style="margin:0;">Quick presets</h3>
+              <button id="reset-create-btn" class="ghost tiny-btn">Reset</button>
+            </div>
+            <div class="preset-grid">
+              <button id="preset-roll-cube" class="secondary">Load Roll-Cube preset</button>
+              <button id="preset-dolen" class="secondary">Load Dolen preset</button>
+            </div>
+            <div class="meta">Presets fill topic, roster, and context references so you’re not rebuilding the room from scratch every time.</div>
+          </div>
+
+          <div class="section-divider"></div>
+
+          <div class="stack">
+            <div class="split-line">
               <h3 style="margin:0;">Who’s in the room</h3>
               <button id="add-participant-btn" class="secondary tiny-btn">Add person</button>
             </div>
-            <div class="meta">No pipe syntax. Just add rows. Remove whoever you don’t want.</div>
+            <div class="meta">Add people directly. Remove whoever you don’t want. Roles are just lightweight framing, not rigid costumes.</div>
             <div id="roster-editor" class="roster-editor-list"></div>
           </div>
 
@@ -213,10 +235,11 @@ Prod smoke flow</textarea>
             <div id="active-meta" class="meta"></div>
             <div id="active-warning" class="warning"></div>
           </div>
-          <div class="panel stack">
-            <div><div class="meta">Current speaker</div><strong id="current-speaker">—</strong></div>
-            <div><div class="meta">Next speaker</div><strong id="next-speaker">—</strong></div>
-            <div><div class="meta">Round / turn</div><strong id="round-turn">—</strong></div>
+          <div class="panel hero-stats">
+            <div class="stat-card"><div class="meta">Last speaker</div><strong id="last-speaker">—</strong></div>
+            <div class="stat-card"><div class="meta">On deck</div><strong id="current-speaker">—</strong></div>
+            <div class="stat-card"><div class="meta">After that</div><strong id="next-speaker">—</strong></div>
+            <div class="stat-card"><div class="meta">Round / turn</div><strong id="round-turn">—</strong></div>
           </div>
         </div>
 
@@ -253,6 +276,38 @@ Prod smoke flow</textarea>
 
     <script>
       const API_BASE = 'https://foundations-tests-aside-notices.trycloudflare.com';
+      const PRESETS = {
+        rollCube: {
+          title: 'Roll Cube approach seminar',
+          topic: 'What is the right first approach for Roll Cube?',
+          concept: 'We want Roll Cube to feel instantly legible, multiplayer-native, and worth returning to. The open question is whether we should prioritize the smallest competitive loop, richer systems depth, or frictionless social onboarding first.',
+          workspace_path: '/Users/nb/.openclaw/workspace/roll-cube',
+          file_refs: ['README.md', 'scripts/roll-cube-nightly-audit.sh', 'server/shared.js'],
+          workflow_refs: ['Nightly audit', 'Cloudflare Pages deploy', 'Prod smoke flow'],
+          reference_notes: 'Roll Cube production domain is roll-cube.com and the API is roll-cube-multiplayer.nhbaranski.workers.dev.',
+          participants: [
+            { display_name: 'Product Strategist', agent_id: 'product-strategist', role: 'product' },
+            { display_name: 'Game Systems Designer', agent_id: 'game-systems', role: 'systems' },
+            { display_name: 'Full-Stack Engineer', agent_id: 'full-stack-engineer', role: 'engineering' },
+            { display_name: 'UX Pragmatist', agent_id: 'ux-pragmatist', role: 'ux' },
+          ],
+        },
+        dolen: {
+          title: 'Dolen strategic seminar',
+          topic: 'What is the sharpest next product move for Dolen?',
+          concept: 'Dolen is compliance infrastructure for MNPI-sensitive firms. The room should weigh operator utility, credibility, and the narrowest wedge that compounds.',
+          workspace_path: '/Users/nb/.openclaw/workspace/dolen-prototype',
+          file_refs: ['README.md'],
+          workflow_refs: ['Product positioning', 'Compliance workflow design', 'Operator tooling roadmap'],
+          reference_notes: 'Bias toward trust, operator clarity, and defensible compliance workflow design.',
+          participants: [
+            { display_name: 'Compliance Operator', agent_id: 'compliance-operator', role: 'compliance' },
+            { display_name: 'Product Strategist', agent_id: 'product-strategist', role: 'product' },
+            { display_name: 'Infra Realist', agent_id: 'infra-realist', role: 'infrastructure' },
+            { display_name: 'Buyer Empathy', agent_id: 'buyer-empathy', role: 'gtm' },
+          ],
+        },
+      };
       const state = {
         seminars: [],
         activeSeminarId: null,
@@ -260,12 +315,7 @@ Prod smoke flow</textarea>
         participants: [],
         posts: [],
         refreshTimer: null,
-        draftParticipants: [
-          { display_name: 'Product Strategist', agent_id: 'product-strategist', role: 'product' },
-          { display_name: 'Game Systems Designer', agent_id: 'game-systems', role: 'systems' },
-          { display_name: 'Full-Stack Engineer', agent_id: 'full-stack-engineer', role: 'engineering' },
-          { display_name: 'UX Pragmatist', agent_id: 'ux-pragmatist', role: 'ux' },
-        ],
+        draftParticipants: PRESETS.rollCube.participants.map(p => ({ ...p })),
       };
 
       function escapeHtml(text) {
@@ -342,6 +392,29 @@ Prod smoke flow</textarea>
             renderRosterEditor();
           });
         });
+      }
+
+      function setFieldValue(id, value) {
+        document.getElementById(id).value = value;
+      }
+
+      function applyPreset(name) {
+        const preset = PRESETS[name];
+        if (!preset) return;
+        setFieldValue('title', preset.title);
+        setFieldValue('topic', preset.topic);
+        setFieldValue('concept', preset.concept);
+        setFieldValue('workspace-path', preset.workspace_path || '');
+        setFieldValue('file-refs', (preset.file_refs || []).join('\n'));
+        setFieldValue('workflow-refs', (preset.workflow_refs || []).join('\n'));
+        setFieldValue('reference-notes', preset.reference_notes || '');
+        state.draftParticipants = (preset.participants || []).map(participant => ({ ...participant }));
+        renderRosterEditor();
+      }
+
+      function resetCreateForm() {
+        applyPreset('rollCube');
+        setError('create-error', '');
       }
 
       function addParticipant() {
@@ -425,6 +498,7 @@ Prod smoke flow</textarea>
           document.getElementById('active-title').textContent = 'Pick or create a seminar';
           document.getElementById('active-meta').textContent = '';
           document.getElementById('active-warning').textContent = '';
+          document.getElementById('last-speaker').textContent = '—';
           document.getElementById('current-speaker').textContent = '—';
           document.getElementById('next-speaker').textContent = '—';
           document.getElementById('round-turn').textContent = '—';
@@ -433,12 +507,19 @@ Prod smoke flow</textarea>
           renderMessages();
           return;
         }
-        const nextSpeaker = state.participants.find(p => p.agent_id === seminar.current_speaker_id);
+        const onDeck = state.participants.find(p => p.agent_id === seminar.current_speaker_id) || null;
+        const recentSpeakerPost = [...state.posts].reverse().find(post => post.author_type === 'agent' && post.author_name !== seminar.moderator_name && post.author_name !== seminar.research_analyst_name) || null;
+        const lastSpeaker = recentSpeakerPost ? state.participants.find(p => p.display_name === recentSpeakerPost.author_name) || { display_name: recentSpeakerPost.author_name } : null;
+        const onDeckIndex = state.participants.findIndex(p => p.agent_id === seminar.current_speaker_id);
+        const afterThat = onDeckIndex >= 0 && state.participants.length > 1
+          ? state.participants[(onDeckIndex + 1) % state.participants.length]
+          : null;
         document.getElementById('active-title').textContent = seminar.title;
         document.getElementById('active-meta').textContent = `${seminar.topic} · ${seminar.status}`;
         document.getElementById('active-warning').textContent = seminar.status === 'draft' ? 'Stage the seminar first so the research analyst can set the table.' : '';
-        document.getElementById('current-speaker').textContent = nextSpeaker?.display_name || 'Moderator / room';
-        document.getElementById('next-speaker').textContent = nextSpeaker?.display_name || '—';
+        document.getElementById('last-speaker').textContent = lastSpeaker?.display_name || 'Nobody yet';
+        document.getElementById('current-speaker').textContent = onDeck?.display_name || 'Moderator / room';
+        document.getElementById('next-speaker').textContent = afterThat?.display_name || '—';
         document.getElementById('round-turn').textContent = `Round ${seminar.round_index} · Turn ${seminar.turn_index}`;
         document.getElementById('context-packet').innerHTML = seminar.context_packet
           ? escapeHtml(seminar.context_packet).replace(/\n/g, '<br>')
@@ -520,6 +601,9 @@ Prod smoke flow</textarea>
         }, 5000);
       }
 
+      document.getElementById('preset-roll-cube').addEventListener('click', () => applyPreset('rollCube'));
+      document.getElementById('preset-dolen').addEventListener('click', () => applyPreset('dolen'));
+      document.getElementById('reset-create-btn').addEventListener('click', resetCreateForm);
       document.getElementById('add-participant-btn').addEventListener('click', addParticipant);
       document.getElementById('create-btn').addEventListener('click', () => createSeminar().catch(e => setError('create-error', e.message)));
       document.getElementById('stage-btn').addEventListener('click', () => stageSeminar().catch(e => setError('action-error', e.message)));
@@ -529,7 +613,7 @@ Prod smoke flow</textarea>
       document.getElementById('finalize-btn').addEventListener('click', () => summarize(true).catch(e => setError('action-error', e.message)));
       document.getElementById('refresh-btn').addEventListener('click', () => loadSeminars().catch(e => setError('action-error', e.message)));
 
-      renderRosterEditor();
+      resetCreateForm();
       renderActiveSeminar();
       scheduleRefresh();
       loadSeminars().catch(e => setError('action-error', e.message));
