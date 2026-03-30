@@ -39,7 +39,8 @@
       }
       .stack { display: grid; gap: 12px; }
       .row { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
-      .triple { display: grid; gap: 8px; grid-template-columns: 1.1fr 1fr 0.9fr auto; align-items: end; }
+      .triple { display: grid; gap: 8px; grid-template-columns: 1.1fr 1fr 0.9fr 0.9fr auto; align-items: end; }
+      .quad { display: grid; gap: 8px; grid-template-columns: 1fr 1fr 1.2fr; align-items: end; }
       input, textarea, button, select {
         width: 100%;
         border-radius: 12px;
@@ -275,7 +276,7 @@ Prod smoke flow</textarea>
     </div>
 
     <script>
-      const API_BASE = 'https://foundations-tests-aside-notices.trycloudflare.com';
+      const API_BASE = 'https://pipeline-participate-assuming-qualifications.trycloudflare.com';
       const PRESETS = {
         rollCube: {
           title: 'Roll Cube approach seminar',
@@ -286,10 +287,10 @@ Prod smoke flow</textarea>
           workflow_refs: ['Nightly audit', 'Cloudflare Pages deploy', 'Prod smoke flow'],
           reference_notes: 'Roll Cube production domain is roll-cube.com and the API is roll-cube-multiplayer.nhbaranski.workers.dev.',
           participants: [
-            { display_name: 'Product Strategist', agent_id: 'product-strategist', role: 'product' },
-            { display_name: 'Game Systems Designer', agent_id: 'game-systems', role: 'systems' },
-            { display_name: 'Full-Stack Engineer', agent_id: 'full-stack-engineer', role: 'engineering' },
-            { display_name: 'UX Pragmatist', agent_id: 'ux-pragmatist', role: 'ux' },
+            { display_name: 'Product Strategist', agent_id: 'product-strategist', role: 'product', model_profile: 'fast' },
+            { display_name: 'Game Systems Designer', agent_id: 'game-systems', role: 'systems', model_profile: 'fast' },
+            { display_name: 'Full-Stack Engineer', agent_id: 'full-stack-engineer', role: 'engineering', model_profile: 'fast' },
+            { display_name: 'UX Pragmatist', agent_id: 'ux-pragmatist', role: 'ux', model_profile: 'fast' },
           ],
         },
         dolen: {
@@ -301,10 +302,10 @@ Prod smoke flow</textarea>
           workflow_refs: ['Product positioning', 'Compliance workflow design', 'Operator tooling roadmap'],
           reference_notes: 'Bias toward trust, operator clarity, and defensible compliance workflow design.',
           participants: [
-            { display_name: 'Compliance Operator', agent_id: 'compliance-operator', role: 'compliance' },
-            { display_name: 'Product Strategist', agent_id: 'product-strategist', role: 'product' },
-            { display_name: 'Infra Realist', agent_id: 'infra-realist', role: 'infrastructure' },
-            { display_name: 'Buyer Empathy', agent_id: 'buyer-empathy', role: 'gtm' },
+            { display_name: 'Compliance Operator', agent_id: 'compliance-operator', role: 'compliance', model_profile: 'deep' },
+            { display_name: 'Product Strategist', agent_id: 'product-strategist', role: 'product', model_profile: 'fast' },
+            { display_name: 'Infra Realist', agent_id: 'infra-realist', role: 'infrastructure', model_profile: 'local' },
+            { display_name: 'Buyer Empathy', agent_id: 'buyer-empathy', role: 'gtm', model_profile: 'fast' },
           ],
         },
       };
@@ -360,19 +361,43 @@ Prod smoke flow</textarea>
             <div class="triple">
               <div>
                 <div class="editor-label">Display name</div>
-                <input data-field="display_name" data-index="${index}" value="${escapeHtml(participant.display_name)}" />
+                <input data-field="display_name" data-index="${index}" value="${escapeHtml(participant.display_name || '')}" />
               </div>
               <div>
                 <div class="editor-label">Agent ID</div>
-                <input data-field="agent_id" data-index="${index}" value="${escapeHtml(participant.agent_id)}" />
+                <input data-field="agent_id" data-index="${index}" value="${escapeHtml(participant.agent_id || '')}" />
               </div>
               <div>
                 <div class="editor-label">Role</div>
-                <input data-field="role" data-index="${index}" value="${escapeHtml(participant.role)}" />
+                <input data-field="role" data-index="${index}" value="${escapeHtml(participant.role || '')}" />
+              </div>
+              <div>
+                <div class="editor-label">Model preset</div>
+                <select data-field="model_profile" data-index="${index}">
+                  <option value="auto" ${((participant.model_profile || 'auto') === 'auto') ? 'selected' : ''}>Auto</option>
+                  <option value="fast" ${((participant.model_profile || '') === 'fast') ? 'selected' : ''}>Fast</option>
+                  <option value="deep" ${((participant.model_profile || '') === 'deep') ? 'selected' : ''}>Deep</option>
+                  <option value="local" ${((participant.model_profile || '') === 'local') ? 'selected' : ''}>Local</option>
+                  <option value="custom" ${((participant.model_profile || '') === 'custom') ? 'selected' : ''}>Custom</option>
+                </select>
               </div>
               <div>
                 <div class="editor-label">&nbsp;</div>
                 <button class="ghost tiny-btn" data-remove-index="${index}">Remove</button>
+              </div>
+            </div>
+            <div class="quad">
+              <div>
+                <div class="editor-label">Provider override</div>
+                <input data-field="provider" data-index="${index}" value="${escapeHtml(participant.provider || '')}" placeholder="optional" />
+              </div>
+              <div>
+                <div class="editor-label">Model override</div>
+                <input data-field="model" data-index="${index}" value="${escapeHtml(participant.model || '')}" placeholder="optional" />
+              </div>
+              <div>
+                <div class="editor-label">Base URL override</div>
+                <input data-field="base_url" data-index="${index}" value="${escapeHtml(participant.base_url || '')}" placeholder="optional" />
               </div>
             </div>
           </div>
@@ -422,6 +447,10 @@ Prod smoke flow</textarea>
           display_name: '',
           agent_id: `agent-${state.draftParticipants.length + 1}`,
           role: 'participant',
+          model_profile: 'auto',
+          provider: '',
+          model: '',
+          base_url: '',
         });
         renderRosterEditor();
       }
@@ -432,6 +461,10 @@ Prod smoke flow</textarea>
             display_name: (participant.display_name || '').trim() || `Agent ${idx + 1}`,
             agent_id: (participant.agent_id || '').trim() || `agent-${idx + 1}`,
             role: (participant.role || '').trim() || 'participant',
+            model_profile: (participant.model_profile || 'auto').trim() || 'auto',
+            provider: (participant.provider || '').trim(),
+            model: (participant.model || '').trim(),
+            base_url: (participant.base_url || '').trim(),
           }))
           .filter(p => p.display_name && p.agent_id);
       }
@@ -463,6 +496,7 @@ Prod smoke flow</textarea>
         }
         root.innerHTML = state.participants.map(participant => {
           const onDeck = participant.agent_id === state.activeSeminar?.current_speaker_id;
+          const modelLabel = participant.model || participant.model_profile || 'auto';
           return `
             <div class="roster-card">
               <div class="message-author">
@@ -470,6 +504,7 @@ Prod smoke flow</textarea>
                 <span class="pill ${onDeck ? 'live' : ''}">${escapeHtml(participant.role || 'participant')}</span>
               </div>
               <div class="meta">${escapeHtml(participant.agent_id || '')}</div>
+              <div class="meta">Model: ${escapeHtml(modelLabel)}</div>
             </div>
           `;
         }).join('');
